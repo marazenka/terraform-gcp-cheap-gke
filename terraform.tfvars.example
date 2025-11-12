@@ -1,0 +1,44 @@
+# ===== PROJECT & LOCATION =====
+project_id = "your-gcp-project-id"
+
+# ===== CLUSTER LOCATION (ZONAL = CHEAPEST) =====
+zone   = "europe-north2-a" # Single zone = FREE control plane!
+region = "europe-north2"   # Used for VPC/subnet only
+
+# ===== NETWORK CONFIGURATION =====
+# Network resource management
+vpc_name    = "vpc1"
+subnet_name = "subnet1"
+
+# IP addressing (IPv4 only for simplicity and cost optimization)
+subnet_cidr   = "10.0.2.0/24"
+pods_cidr     = "10.164.0.0/14"
+services_cidr = "10.20.0.0/20"
+
+# Network access
+private_ip_google_access = true # Allows nodes without external IPs to access Google APIs
+
+# ===== GKE CLUSTER CONFIGURATION =====
+cluster_name       = "my-gke-cluster"
+kubernetes_version = "1.33"
+datapath_provider  = "LEGACY_DATAPATH" # LEGACY is free, ADVANCED costs extra
+channel            = "REGULAR"
+networking_mode    = "VPC_NATIVE"
+
+# ===== NODE POOL CONFIGURATION =====
+enable_node_pool_autoscaling = true
+enable_spot_instances        = true
+node_pool_name               = "primary-pool"
+node_count                   = 1 # Initial node count
+min_node_count               = 0 # Minimum nodes for autoscaling (can scale to zero!)
+max_node_count               = 2 # Maximum nodes for autoscaling
+
+# Machine configuration (using cheapest options)
+machine_type = "e2-micro"       # Cheapest machine type (~$6.11/month regular, ~$1.83/month spot)
+disk_size_gb = 15               # Minimum disk size for GKE image (COS requires at least 12GB)
+disk_type    = "pd-standard"    # Standard disk (cheapest option)
+image_type   = "COS_CONTAINERD" # Container-Optimized OS (lighter than Ubuntu)
+
+# Node management
+auto_upgrade = true # Keep nodes updated automatically
+auto_repair  = true # Auto-repair unhealthy nodes
