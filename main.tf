@@ -21,7 +21,7 @@ resource "google_compute_network" "vpc" {
   name                     = var.vpc_name
   auto_create_subnetworks  = false
   routing_mode             = "REGIONAL"
-  enable_ula_internal_ipv6 = false
+  enable_ula_internal_ipv6 = var.stack_type == "IPV4_IPV6" && var.ipv6_access_type == "INTERNAL" ? true : false
 }
 
 resource "google_compute_subnetwork" "subnet" {
