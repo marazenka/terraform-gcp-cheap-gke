@@ -25,11 +25,16 @@ resource "google_compute_network" "vpc" {
 }
 
 resource "google_compute_subnetwork" "subnet" {
-  name                     = var.subnet_name
-  region                   = var.region
-  network                  = google_compute_network.vpc.id
-  ip_cidr_range            = var.subnet_cidr
-  private_ip_google_access = var.private_ip_google_access
+  name                       = var.subnet_name
+  region                     = var.region
+  network                    = google_compute_network.vpc.id
+  ip_cidr_range              = var.subnet_cidr
+  private_ip_google_access   = var.private_ip_google_access
+
+  # IPv6 configuration (only applied when stack_type = IPV4_IPV6)
+  stack_type                 = var.stack_type
+  ipv6_access_type           = var.stack_type == "IPV4_IPV6" ? var.ipv6_access_type : null
+  private_ipv6_google_access = var.stack_type == "IPV4_IPV6" ? var.private_ipv6_google_access : null
 }
 
 # --- CLUSTER ---
@@ -68,6 +73,7 @@ resource "google_container_cluster" "cluster" {
   ip_allocation_policy {
     cluster_ipv4_cidr_block  = var.pods_cidr
     services_ipv4_cidr_block = var.services_cidr
+    stack_type               = var.stack_type
   }
 
   addons_config {

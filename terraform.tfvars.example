@@ -18,6 +18,22 @@ services_cidr = "10.20.0.0/20"
 # Network access
 private_ip_google_access = true # Allows nodes without external IPs to access Google APIs
 
+# ===== IPv6 CONFIGURATION =====
+# Set stack_type = "IPV4_IPV6" to enable dual-stack (IPv4 + IPv6) on the subnet and cluster
+# or "IPV4_ONLY" for IPv4-only (simpler and cheaper, recommended for most use cases)
+stack_type = "IPV4_ONLY"
+
+# Used only when stack_type = "IPV4_IPV6":
+#   EXTERNAL = public GUA IPv6 (e.g. 2600:1900::/28), routable from the internet
+#   INTERNAL = private IPv6, accessible only within VPC / Cloud Interconnect
+ipv6_access_type = "EXTERNAL"
+
+# Used only when stack_type = "IPV4_IPV6":
+#   DISABLE_GOOGLE_ACCESS                    = no IPv6 Google API access
+#   ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE      = outbound only
+#   ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE    = full bidirectional
+private_ipv6_google_access = "DISABLE_GOOGLE_ACCESS"
+
 # ===== GKE CLUSTER CONFIGURATION =====
 cluster_name       = "my-gke-cluster"
 kubernetes_version = "1.33"

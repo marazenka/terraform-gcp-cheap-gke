@@ -151,6 +151,39 @@ variable "private_ip_google_access" {
   default     = true
 }
 
+variable "stack_type" {
+  type        = string
+  description = "IP stack type for the subnet and cluster. IPV4_ONLY = IPv4 only. IPV4_IPV6 = dual-stack (IPv4 + IPv6)."
+  default     = "IPV4_ONLY"
+
+  validation {
+    condition     = contains(["IPV4_ONLY", "IPV4_IPV6"], var.stack_type)
+    error_message = "Invalid stack_type. Allowed values are IPV4_ONLY or IPV4_IPV6."
+  }
+}
+
+variable "ipv6_access_type" {
+  type        = string
+  description = "IPv6 access type for the subnet. Used only when stack_type = IPV4_IPV6. EXTERNAL = public IPv6 (GUA), INTERNAL = private IPv6 (only within VPC/Interconnect)."
+  default     = "EXTERNAL"
+
+  validation {
+    condition     = contains(["INTERNAL", "EXTERNAL"], var.ipv6_access_type)
+    error_message = "Invalid ipv6_access_type. Allowed values are INTERNAL or EXTERNAL."
+  }
+}
+
+variable "private_ipv6_google_access" {
+  type        = string
+  description = "Private IPv6 Google access type. Used only when stack_type = IPV4_IPV6. Options: DISABLE_GOOGLE_ACCESS, ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE, ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE."
+  default     = "DISABLE_GOOGLE_ACCESS"
+
+  validation {
+    condition     = contains(["DISABLE_GOOGLE_ACCESS", "ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE", "ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE"], var.private_ipv6_google_access)
+    error_message = "Invalid private_ipv6_google_access. Allowed values are DISABLE_GOOGLE_ACCESS, ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE, ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE."
+  }
+}
+
 variable "networking_mode" {
   type        = string
   description = "The networking mode for the GKE cluster. Options are VPC_NATIVE or ROUTE_BASED."

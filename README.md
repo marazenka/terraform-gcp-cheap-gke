@@ -8,7 +8,8 @@ This project automates the deployment of a cost-optimized Google Kubernetes Engi
 - Spot (preemptible) instances for up to 91% cost savings on compute
 - Minimal resource allocation (e2-micro instances, standard disks)
 - Autoscaling configuration with ability to scale to zero nodes
-- Simplified networking with IPv4-only setup
+- Flexible networking: IPv4-only (default) or dual-stack IPv4+IPv6
+- Optional IPv6 support with configurable access type (EXTERNAL/INTERNAL)
 - Disabled monitoring and logging to avoid additional charges
 - Infrastructure as Code using Terraform for reproducible deployments
 
@@ -129,6 +130,24 @@ Edit `terraform.tfvars` to customize your cluster:
 - `min_node_count` and `max_node_count`: Autoscaling limits
 - `disk_size_gb` and `disk_type`: Storage configuration
 
+### IPv6 / Dual-Stack
+
+By default the cluster runs IPv4-only (`stack_type = "IPV4_ONLY"`). To enable dual-stack:
+
+```hcl
+# Enable dual-stack (IPv4 + IPv6)
+stack_type = "IPV4_IPV6"
+
+# EXTERNAL = public GUA IPv6 (2600:1900::/28), routable from the internet
+# INTERNAL = private IPv6, accessible only within VPC / Cloud Interconnect
+ipv6_access_type = "EXTERNAL"
+
+# Optional: allow nodes to reach Google APIs over IPv6
+private_ipv6_google_access = "ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE"
+```
+
+No additional IPv6 CIDR ranges are needed — GCP automatically assigns a `/64` to the subnet and allocates ranges for pods and services.
+
 ## Usage
 
 ### Configure kubectl
@@ -198,6 +217,9 @@ terraform destroy -auto-approve
 | `min_node_count` | Minimum nodes for autoscaling | number | `1` |
 | `max_node_count` | Maximum nodes for autoscaling | number | `3` |
 | `kubernetes_version` | Kubernetes version | string | `1.33` |
+| `stack_type` | IP stack: `IPV4_ONLY` or `IPV4_IPV6` (dual-stack) | string | `IPV4_ONLY` |
+| `ipv6_access_type` | IPv6 access type: `EXTERNAL` or `INTERNAL` | string | `EXTERNAL` |
+| `private_ipv6_google_access` | IPv6 access to Google APIs | string | `DISABLE_GOOGLE_ACCESS` |
 
 ## Outputs
 
